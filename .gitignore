@@ -1,0 +1,23 @@
+# Dataset (too large for git — download from https://grouplens.org/datasets/movielens/1m/)
+data/*.dat
+data/*.zip
+data/README
+
+# Spark
+metastore_db/
+derby.log
+spark-warehouse/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
