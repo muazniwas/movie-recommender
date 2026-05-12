@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MovieLens Analytics</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-icon">🎬</span>
+      <span class="brand-text">MovieLens</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="/" class="nav-link active">Analytics</a>
+      <a href="/recommend.html" class="nav-link">Recommender</a>
+    </nav>
+  </aside>
+
+  <div class="layout">
+
+    <header class="topbar">
+      <div>
+        <h1 class="page-title">Analytics Dashboard</h1>
+        <p class="page-sub">MovieLens 1M &mdash; Big Data Analytics via Apache Spark</p>
+      </div>
+      <div id="status-badge" class="badge badge--loading">Loading data&hellip;</div>
+    </header>
+
+    <main class="content">
+
+      <!-- Overview cards -->
+      <section class="section">
+        <h2 class="section-title">Overview</h2>
+        <div class="cards">
+          <div class="card stat-card">
+            <div class="stat-label">Total Ratings</div>
+            <div class="stat-value" id="stat-total">—</div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-label">Mean Rating</div>
+            <div class="stat-value" id="stat-mean">—</div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-label">Median Rating</div>
+            <div class="stat-value" id="stat-median">—</div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-label">Std Deviation</div>
+            <div class="stat-value" id="stat-std">—</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Rating distribution -->
+      <section class="section">
+        <h2 class="section-title">Rating Distribution</h2>
+        <div class="cards">
+          <div class="card chart-card">
+            <h3 class="chart-title">Ratings by Star Value</h3>
+            <div class="chart-wrap"><canvas id="chart-rating-bar"></canvas></div>
+          </div>
+          <div class="card chart-card">
+            <h3 class="chart-title">Rating Share</h3>
+            <div class="chart-wrap chart-wrap--sm"><canvas id="chart-rating-doughnut"></canvas></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Genre analysis -->
+      <section class="section">
+        <h2 class="section-title">Genre Analysis</h2>
+        <div class="cards">
+          <div class="card chart-card">
+            <h3 class="chart-title">Movies per Genre</h3>
+            <div class="chart-wrap chart-wrap--tall"><canvas id="chart-genre-count"></canvas></div>
+          </div>
+          <div class="card chart-card">
+            <h3 class="chart-title">Average Rating per Genre</h3>
+            <div class="chart-wrap chart-wrap--tall"><canvas id="chart-genre-rating"></canvas></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Top movies -->
+      <section class="section">
+        <h2 class="section-title">Top Movies</h2>
+        <div class="card">
+          <div class="table-header">
+            <h3 class="chart-title">Top 20 by Bayesian Average Rating</h3>
+            <span class="hint">min 50 ratings required</span>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table" id="table-top-movies">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Title</th>
+                  <th>Genres</th>
+                  <th>Ratings</th>
+                  <th>Avg ★</th>
+                  <th>Bayesian ★</th>
+                </tr>
+              </thead>
+              <tbody id="top-movies-body">
+                <tr><td colspan="6" class="loading-cell">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- User stats -->
+      <section class="section">
+        <h2 class="section-title">User Statistics</h2>
+        <div class="cards">
+          <div class="card chart-card">
+            <h3 class="chart-title">Gender Distribution</h3>
+            <div class="chart-wrap chart-wrap--sm"><canvas id="chart-gender"></canvas></div>
+          </div>
+          <div class="card chart-card">
+            <h3 class="chart-title">Age Groups</h3>
+            <div class="chart-wrap"><canvas id="chart-age"></canvas></div>
+          </div>
+        </div>
+        <div class="cards" style="margin-top:1rem">
+          <div class="card chart-card chart-card--full">
+            <h3 class="chart-title">User Activity Distribution (ratings per user)</h3>
+            <div class="chart-wrap"><canvas id="chart-activity"></canvas></div>
+          </div>
+        </div>
+        <div class="cards" style="margin-top:1rem">
+          <div class="card stat-card">
+            <div class="stat-label">Min ratings / user</div>
+            <div class="stat-value" id="stat-act-min">—</div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-label">Max ratings / user</div>
+            <div class="stat-value" id="stat-act-max">—</div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-label">Mean ratings / user</div>
+            <div class="stat-value" id="stat-act-mean">—</div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-label">Median ratings / user</div>
+            <div class="stat-value" id="stat-act-median">—</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Temporal trends -->
+      <section class="section">
+        <h2 class="section-title">Temporal Trends</h2>
+        <div class="card chart-card chart-card--full">
+          <h3 class="chart-title">Monthly Rating Volume &amp; Average Rating</h3>
+          <div class="chart-wrap"><canvas id="chart-trends"></canvas></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="/js/analytics.js"></script>
+</body>
+</html>
