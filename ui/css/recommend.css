@@ -151,6 +151,7 @@
 }
 .result-info  { flex: 1; }
 .result-title  { font-weight: 700; font-size: .95rem; margin-bottom: .2rem; }
+.result-year   { font-weight: 400; color: var(--text-secondary); font-size: .85rem; }
 .result-genres { font-size: .78rem; color: var(--text-secondary); }
 .result-scores {
   display: flex;

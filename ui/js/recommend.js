@@ -80,7 +80,7 @@ function renderMovies(movies) {
     <div class="movie-card" id="mc-${m.movieId}" data-id="${m.movieId}">
       <div class="movie-title">${m.title}</div>
       <div class="movie-genres">${m.genres.replace(/\|/g, ' · ')}</div>
-      <div class="movie-meta">${m.num_ratings.toLocaleString()} ratings · ${m.avg_rating.toFixed(2)} avg</div>
+      <div class="movie-meta">${m.year ? m.year + ' · ' : ''}${m.num_ratings.toLocaleString()} ratings · ${m.avg_rating.toFixed(2)} avg</div>
       <div class="star-rating" data-id="${m.movieId}">
         ${[1, 2, 3, 4, 5].map(v =>
           `<span class="star" data-val="${v}" title="${v} star${v > 1 ? 's' : ''}">★</span>`
@@ -170,7 +170,7 @@ function renderResults(recs) {
     <div class="result-card">
       <div class="result-rank">${i + 1}</div>
       <div class="result-info">
-        <div class="result-title">${r.title}</div>
+        <div class="result-title">${r.title}${r.year ? ` <span class="result-year">(${r.year})</span>` : ''}</div>
         <div class="result-genres">${r.genres.replace(/\|/g, ' · ')}</div>
       </div>
       <div class="result-scores">

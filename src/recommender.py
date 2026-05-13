@@ -24,7 +24,7 @@ class Recommender:
         self._ratings_df: DataFrame | None = None
 
         # ── Movie metadata (pandas for fast in-process lookup) ─────────────
-        movies_pd = movies_df.select("movieId", "title_clean", "genres").toPandas()
+        movies_pd = movies_df.select("movieId", "title_clean", "genres", "year").toPandas()
         self._movies = movies_pd.set_index("movieId")
 
         # ── Genre feature matrix ───────────────────────────────────────────
@@ -113,9 +113,10 @@ class Recommender:
                     seen.add(mid)
                     movie = self._movies.loc[mid]
                     result.append({
-                        "movieId":     mid,
-                        "title":       movie["title_clean"],
-                        "genres":      movie["genres"],
+                        "movieId":     int(mid),
+                        "title":       str(movie["title_clean"]),
+                        "genres":      str(movie["genres"]),
+                        "year":        int(movie["year"]) if pd.notna(movie["year"]) else None,
                         "num_ratings": int(row["num_ratings"]),
                         "avg_rating":  float(row["avg_rating"]),
                     })
@@ -172,6 +173,7 @@ class Recommender:
                 "movieId":       int(mid),
                 "title":         str(movie["title_clean"]),
                 "genres":        str(movie["genres"]),
+                "year":          int(movie["year"]) if pd.notna(movie["year"]) else None,
                 "hybrid_score":  round(float(hybrid[mid]),              4),
                 "als_score":     round(float(als_norm.get(mid,  0.0)),  4),
                 "content_score": round(float(cb_norm.get(mid,   0.0)),  4),
