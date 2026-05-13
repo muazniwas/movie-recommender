@@ -5,9 +5,12 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from src.analytics import create_spark_session, load_data
+from src.recommender import Recommender
 from api.routes import analytics as analytics_routes
+from api.routes import recommendations as recommend_routes
 
-DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
+DATA_DIR  = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
+MODEL_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "model")
 
 
 @asynccontextmanager
@@ -21,6 +24,11 @@ async def lifespan(app: FastAPI):
     app.state.ratings = ratings
     app.state.movies  = movies
     app.state.users   = users
+
+    recommender = Recommender(spark, movies, MODEL_DIR)
+    recommender.set_ratings(ratings)
+    app.state.recommender = recommender
+
     print("Data loaded and cached. Server ready.")
 
     yield
@@ -32,6 +40,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="Movie Recommender", lifespan=lifespan)
 
 app.include_router(analytics_routes.router, prefix="/api/analytics", tags=["analytics"])
+app.include_router(recommend_routes.router, prefix="/api/recommend", tags=["recommend"])
 
 # Serve the UI — must be mounted last so API routes take priority
 app.mount("/", StaticFiles(directory="ui", html=True), name="ui")
