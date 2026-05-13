@@ -8,6 +8,9 @@ metastore_db/
 derby.log
 spark-warehouse/
 
+# Trained model (regenerate with: python train.py)
+model/
+
 # Python
 __pycache__/
 *.pyc
