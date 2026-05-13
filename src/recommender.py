@@ -63,50 +63,67 @@ class Recommender:
     def get_all_genres(self) -> list[str]:
         return self._genres
 
-    def get_movies_by_genres(self, genres: list[str], n: int = 12) -> list[dict]:
+    def get_movies_by_genres(self, genres: list[str], n_per_genre: int = 5) -> list[dict]:
         """
-        Return popular movies that belong to at least one of the selected genres.
-        Used to show the user a set of movies to rate before recommending.
+        Return n_per_genre random movies per selected genre.
+        One Spark query fetches all candidates in random order; movies are then
+        assigned to genres greedily so no movie appears twice.
         """
         valid_genres = [g for g in genres if g in self._genre_matrix.columns]
         if not valid_genres:
             return []
 
-        mask        = self._genre_matrix[valid_genres].any(axis=1)
-        filtered_ids = self._genre_matrix[mask].index.tolist()
+        genre_sets: dict[str, set[int]] = {
+            g: set(self._genre_matrix[self._genre_matrix[g] == 1].index.tolist())
+            for g in valid_genres
+        }
+        all_ids = list({mid for ids in genre_sets.values() for mid in ids})
 
         if self._ratings_df is not None:
             rows = (
                 self._ratings_df
-                .filter(F.col("movieId").isin(filtered_ids))
+                .filter(F.col("movieId").isin(all_ids))
                 .groupBy("movieId")
                 .agg(
                     F.count("rating").alias("num_ratings"),
                     F.round(F.mean("rating"), 2).alias("avg_rating"),
                 )
-                .orderBy(F.desc("num_ratings"))
-                .limit(n)
+                .filter(F.col("num_ratings") >= 50)
+                .orderBy(F.rand())
                 .collect()
             )
         else:
+            import random
+            random.shuffle(all_ids)
             rows = [
                 {"movieId": mid, "num_ratings": 0, "avg_rating": 0.0}
-                for mid in filtered_ids[:n]
+                for mid in all_ids
             ]
 
-        result = []
+        genre_counts = {g: 0 for g in valid_genres}
+        seen:   set[int]   = set()
+        result: list[dict] = []
+
         for row in rows:
             mid = int(row["movieId"])
-            if mid not in self._movies.index:
+            if mid in seen or mid not in self._movies.index:
                 continue
-            movie = self._movies.loc[mid]
-            result.append({
-                "movieId":     mid,
-                "title":       movie["title_clean"],
-                "genres":      movie["genres"],
-                "num_ratings": int(row["num_ratings"]),
-                "avg_rating":  float(row["avg_rating"]),
-            })
+            for g in valid_genres:
+                if mid in genre_sets[g] and genre_counts[g] < n_per_genre:
+                    seen.add(mid)
+                    movie = self._movies.loc[mid]
+                    result.append({
+                        "movieId":     mid,
+                        "title":       movie["title_clean"],
+                        "genres":      movie["genres"],
+                        "num_ratings": int(row["num_ratings"]),
+                        "avg_rating":  float(row["avg_rating"]),
+                    })
+                    genre_counts[g] += 1
+                    break
+            if all(c >= n_per_genre for c in genre_counts.values()):
+                break
+
         return result
 
     def recommend(
