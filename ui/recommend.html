@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recommender · CineAI</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/recommend.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-icon">🎬</span>
+      <span class="brand-text">CineAI</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="/" class="nav-link">Analytics</a>
+      <a href="/recommend.html" class="nav-link active">Recommender</a>
+    </nav>
+  </aside>
+
+  <div class="layout">
+    <header class="topbar">
+      <div>
+        <div class="page-title">Movie Recommender</div>
+        <div class="page-sub">Tell us what you like — get personalised picks</div>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <!-- Stepper -->
+      <div class="stepper">
+        <div class="stepper-step active" id="stepper-1">
+          <div class="step-circle">1</div>
+          <div class="step-label">Pick Genres</div>
+        </div>
+        <div class="stepper-line"></div>
+        <div class="stepper-step" id="stepper-2">
+          <div class="step-circle">2</div>
+          <div class="step-label">Rate Movies</div>
+        </div>
+        <div class="stepper-line"></div>
+        <div class="stepper-step" id="stepper-3">
+          <div class="step-circle">3</div>
+          <div class="step-label">Recommendations</div>
+        </div>
+      </div>
+
+      <!-- Step 1: Genre Selection -->
+      <div id="step-1" class="step-panel">
+        <div class="card">
+          <h2 class="step-heading">What genres do you enjoy?</h2>
+          <p class="step-desc">Select one or more genres. We'll show you popular movies from those genres for you to rate.</p>
+          <div id="genre-grid" class="genre-grid">
+            <span class="loading-cell">Loading genres…</span>
+          </div>
+          <div class="step-footer">
+            <button id="btn-to-step2" class="btn btn-primary" disabled>Find Movies →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Rate Movies -->
+      <div id="step-2" class="step-panel hidden">
+        <div class="card">
+          <h2 class="step-heading">Rate some movies</h2>
+          <p class="step-desc">Rate at least one movie you've seen. Skip the rest — the more you rate, the better your recommendations.</p>
+          <div id="movies-grid" class="movies-grid"></div>
+          <div class="step-footer">
+            <button id="btn-back-1" class="btn btn-ghost">← Back</button>
+            <button id="btn-to-step3" class="btn btn-primary" disabled>Get Recommendations →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Results -->
+      <div id="step-3" class="step-panel hidden">
+        <div class="card">
+          <div class="results-header">
+            <h2 class="step-heading">Your Recommendations</h2>
+            <button id="btn-restart" class="btn btn-ghost">Start Over</button>
+          </div>
+          <div id="results-list" class="results-list"></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="/js/recommend.js"></script>
+</body>
+</html>
